@@ -1,0 +1,4 @@
+name: Kayn
+version: '${project.version}'
+main: com.gbunny.kayn.Kayn
+api-version: 1.17
