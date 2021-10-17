@@ -24,8 +24,8 @@ class KaynReapingHook(plugin: Kayn) : Listener {
 
                 lore(
                     listOf(
-                        text().content("상대를 향해 사용시 궁극기 사용").build(),
-                        text().content("휘두를 시 돌진후 회전베기").build()
+                        text().content("상대를 향해 우클릭시 궁극기 사용").build(),
+                        text().content("Q : 돌진후 회전베기").build()
                     )
                 )
                 isUnbreakable = true

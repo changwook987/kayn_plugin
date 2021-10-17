@@ -1,5 +1,6 @@
 package com.gbunny.kayn
 
+import com.gbunny.kayn.skill.ReapingSlash
 import com.gbunny.kayn.skill.UmbralTrespass
 import com.gbunny.kayn.wands.KaynReapingHook
 import org.bukkit.plugin.java.JavaPlugin
@@ -20,6 +21,9 @@ class Kayn : JavaPlugin() {
             )
             registerEvents(
                 KaynReapingHook(this@Kayn), this@Kayn
+            )
+            registerEvents(
+                ReapingSlash(this@Kayn),this@Kayn
             )
         }
     }
