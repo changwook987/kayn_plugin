@@ -8,8 +8,6 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerDropItemEvent
-import org.bukkit.potion.PotionEffect
-import org.bukkit.potion.PotionEffectType
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.Vector
 import kotlin.math.cos
@@ -17,7 +15,7 @@ import kotlin.math.sin
 
 class ReapingSlash(private val plugin: Kayn) : Listener {
     @EventHandler
-    fun playerDropHook(e: PlayerDropItemEvent) {
+    fun reapingSlash(e: PlayerDropItemEvent) {
 
         val hook = KaynReapingHook(plugin).hook
         val player = e.player
@@ -27,49 +25,54 @@ class ReapingSlash(private val plugin: Kayn) : Listener {
             e.isCancelled = true
 
             player.apply {
-                addPotionEffect(PotionEffect(PotionEffectType.SLOW, 40, 6, false, false, false))
                 velocity = location.direction.setY(0).normalize().multiply(3)
             }
 
+
+            var timer = 0
+
             object : BukkitRunnable() {
                 override fun run() {
-                    val targets = player.getNearbyEntities(3.0, 2.0, 3.0)
 
-                    for (target in targets) {
-                        if (target is LivingEntity) {
-                            target.damage(5.0, player)
-                        }
+                    player.apply {
+                        velocity = Vector(0.0, 0.0, 0.0)
+                        fallDistance = 0.0f
                     }
+                    val degree = Math.toRadians(20.0.div(360).times(timer).times(360) + player.location.yaw)
 
-                    var timer = 0
+                    val x = cos(degree)
+                    val z = sin(degree)
 
-                    object : BukkitRunnable() {
-                        override fun run() {
-                            val x = cos(Math.toRadians(20.0.div(360).times(timer).times(360)))
-                            val z = sin(Math.toRadians(20.0.div(360).times(timer).times(360)))
+                    for (i in (0..3)) {
+                        for (j in (0..9)) {
+                            val locOffSet = Vector(x, 0.0, z).multiply(i.plus(j.toDouble().div(10)))
+                            val loc = player.location.add(locOffSet).add(0.0, 1.0, 0.0)
 
-                            for (i in (0..3)) {
-                                for (j in (0..9)) {
-                                    val locOffSet = Vector(x, 0.0, z).multiply(i.plus(j.toDouble().div(10)))
-                                    val loc = player.location.add(locOffSet).add(0.0, 1.0, 0.0)
+                            world.spawnParticle(
+                                Particle.REDSTONE,
+                                loc,
+                                1,
+                                Particle.DustOptions(Color.RED, 1.0f)
+                            )
 
-                                    world.spawnParticle(
-                                        Particle.REDSTONE,
-                                        loc,
-                                        1,
-                                        Particle.DustOptions(Color.RED, 1.0f)
-                                    )
+                            val targets = loc.getNearbyEntities(0.5, 2.0, 0.5)
+
+                            for (target in targets) {
+                                if (target is LivingEntity) {
+                                    if (target != player) {
+                                        target.damage(5.0, player)
+                                    }
                                 }
                             }
-                            timer += 1
-
-                            if (timer == 20) {
-                                cancel()
-                            }
                         }
-                    }.runTaskTimer(plugin, 0L, 1L)
+                    }
+                    timer += 1
+                    Double.MAX_VALUE
+                    if (timer == 18 || player.isDead) {
+                        cancel()
+                    }
                 }
-            }.runTaskLater(plugin, 20L)
+            }.runTaskTimer(plugin, 10L, 1L)
         }
     }
 }

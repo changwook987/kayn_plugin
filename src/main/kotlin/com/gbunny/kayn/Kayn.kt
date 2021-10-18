@@ -1,5 +1,6 @@
 package com.gbunny.kayn
 
+import com.gbunny.kayn.skill.BladesReach
 import com.gbunny.kayn.skill.ReapingSlash
 import com.gbunny.kayn.skill.UmbralTrespass
 import com.gbunny.kayn.wands.KaynReapingHook
@@ -24,6 +25,9 @@ class Kayn : JavaPlugin() {
             )
             registerEvents(
                 ReapingSlash(this@Kayn),this@Kayn
+            )
+            registerEvents(
+                BladesReach(this@Kayn),this@Kayn
             )
         }
     }

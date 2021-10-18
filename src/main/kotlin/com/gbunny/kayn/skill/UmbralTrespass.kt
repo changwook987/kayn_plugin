@@ -41,7 +41,6 @@ class UmbralTrespass(
                 object : BukkitRunnable() {
                     override fun run() {
 
-                        plugin.logger.info("apply")
                         target.apply {
                             isGlowing = true
                         }
@@ -88,8 +87,6 @@ class UmbralTrespass(
                             target.apply {
                                 isGlowing = false
                             }
-
-                            plugin.logger.info("cancel")
 
                             cancel()
                         }
