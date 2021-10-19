@@ -12,7 +12,6 @@ import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerTeleportEvent
-import org.bukkit.scheduler.BukkitRunnable
 
 class BladesReach(
     private val plugin: Kayn
@@ -23,10 +22,10 @@ class BladesReach(
         val item = player.inventory.itemInMainHand
 
         if (e.action == Action.LEFT_CLICK_AIR || e.action == Action.LEFT_CLICK_BLOCK) {
-            if (item == KaynReapingHook(plugin).hook) {
+            if (item == KaynReapingHook(plugin).hook && player.isSneaking) {
                 e.isCancelled = true
 
-                val loc = player.eyeLocation
+                val loc = player.eyeLocation.subtract(0.0, 0.2, 0.0)
                 val locOffSet = player.eyeLocation.direction.setY(0).normalize().multiply(0.2)
 
                 val armorStand = player.world.spawnEntity(loc, EntityType.ARMOR_STAND, false) as ArmorStand
@@ -36,42 +35,34 @@ class BladesReach(
                     isVisible = false
                 }
 
-                var timer = 0
+                val targetArray = emptyArray<LivingEntity>()
 
-                object : BukkitRunnable() {
-                    override fun run() {
-                        armorStand.apply {
+                for (i in (0..50)) {
+                    armorStand.apply {
 
-                            teleport(
-                                location.add(locOffSet),
-                                PlayerTeleportEvent.TeleportCause.PLUGIN
-                            )
+                        teleport(
+                            location.add(locOffSet),
+                            PlayerTeleportEvent.TeleportCause.PLUGIN
+                        )
 
-                            world.spawnParticle(
-                                Particle.REDSTONE,
-                                location,
-                                20,
-                                Particle.DustOptions(Color.RED, 2.0f)
-                            )
+                        world.spawnParticle(
+                            Particle.REDSTONE,
+                            location,
+                            20,
+                            Particle.DustOptions(Color.RED, 2.0f)
+                        )
 
-                            for (target in getNearbyEntities(1.0, 2.0, 1.0)) {
-                                if (target is LivingEntity) {
-                                    if (target != player) {
-                                        target.damage(5.0, player)
-                                    }
+                        for (target in getNearbyEntities(1.0, 2.0, 1.0)) {
+                            if (target is LivingEntity) {
+                                if (target != player && !targetArray.contains(target)) {
+                                    targetArray.plus(target)
+                                    target.damage(5.0, player)
                                 }
                             }
                         }
-
-
-                        timer += 1
-
-                        if (timer == 50) {
-                            armorStand.remove()
-                            cancel()
-                        }
                     }
-                }.runTaskTimer(plugin, 0L, 1L)
+                }
+                armorStand.remove()
             }
         }
     }

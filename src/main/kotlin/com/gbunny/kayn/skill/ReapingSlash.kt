@@ -21,7 +21,7 @@ class ReapingSlash(private val plugin: Kayn) : Listener {
         val player = e.player
         val world = player.world
 
-        if (e.itemDrop.itemStack == hook) {
+        if (e.itemDrop.itemStack == hook && !player.isSneaking) {
             e.isCancelled = true
 
             player.apply {
@@ -46,7 +46,8 @@ class ReapingSlash(private val plugin: Kayn) : Listener {
                     for (i in (0..3)) {
                         for (j in (0..9)) {
                             val locOffSet = Vector(x, 0.0, z).multiply(i.plus(j.toDouble().div(10)))
-                            val loc = player.location.add(locOffSet).add(0.0, 1.0, 0.0)
+                            val loc =
+                                player.location.setDirection(Vector(0.0, 0.0, 0.0)).add(locOffSet).add(0.0, 1.0, 0.0)
 
                             world.spawnParticle(
                                 Particle.REDSTONE,
